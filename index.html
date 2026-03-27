@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KASIUS — Your Whole World, In One Place</title>
+  <meta name="description" content="KASIUS is a sovereign personal world intelligence platform. No cloud dependency. No algorithmic blind spots. Your data never leaves your device.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+
+  <style>
+    /* ─── Tokens ──────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --primary: #8B5CF6;
+      --secondary: #F97316;
+      --card: #1a1a2e;
+      --text: #ffffff;
+      --text-muted: #9ca3af;
+      --font-heading: 'Chakra Petch', sans-serif;
+      --font-body: 'IBM Plex Sans', sans-serif;
+      --ease-cinematic: cubic-bezier(0.23, 1, 0.32, 1);
+      --glass-bg: rgba(26, 26, 46, 0.7);
+      --glass-border: rgba(139, 92, 246, 0.3);
+      --glass-blur: blur(12px);
+    }
+
+    /* ─── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Canvas ──────────────────────────────────────────────── */
+    #globe-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* ─── Content Layer ───────────────────────────────────────── */
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ─── Glass Panel ─────────────────────────────────────────── */
+    .glass-panel {
+      pointer-events: auto;
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: var(--glass-blur);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─── Typography ──────────────────────────────────────────── */
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+    .accent-orange { color: var(--secondary); }
+    .accent-purple { color: var(--primary); }
+
+    /* ─── Animations ──────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 800ms var(--ease-cinematic), transform 800ms var(--ease-cinematic);
+    }
+    .fade-up.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: opacity 900ms var(--ease-cinematic), transform 900ms var(--ease-cinematic);
+    }
+    .slide-left.in-view {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ─── Hero ────────────────────────────────────────────────── */
+    #hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      pointer-events: none;
+    }
+
+    .hero-tagline {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--text);
+      text-shadow: 0 0 80px rgba(249, 115, 22, 0.35), 0 0 160px rgba(249, 115, 22, 0.15);
+      animation: heroFadeIn 1.5s var(--ease-cinematic) 0.5s both;
+      max-width: 800px;
+      padding: 0 24px;
+    }
+
+    .hero-sub {
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: var(--text-muted);
+      margin-top: 16px;
+      animation: heroFadeIn 1.5s var(--ease-cinematic) 1s both;
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: heroFadeIn 1.5s var(--ease-cinematic) 1.8s both;
+    }
+    .scroll-indicator span {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .scroll-chevron {
+      width: 24px;
+      height: 24px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(45deg);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); opacity: 0.5; }
+      50% { transform: rotate(45deg) translateY(6px); opacity: 1; }
+    }
+
+    /* ─── Section Spacing ─────────────────────────────────────── */
+    .section {
+      padding: 120px 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    /* ─── Problem ─────────────────────────────────────────────── */
+    #problem .glass-panel {
+      max-width: 720px;
+      padding: 48px;
+    }
+    #problem h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 24px;
+    }
+    #problem p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+    #problem p + p {
+      margin-top: 16px;
+    }
+
+    /* ─── Features ────────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      padding: 36px;
+    }
+    .feature-card .icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 16px;
+    }
+    .feature-card .icon svg {
+      width: 40px;
+      height: 40px;
+    }
+    .feature-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    #features h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 48px;
+      text-align: center;
+    }
+
+    /* ─── Sovereignty ─────────────────────────────────────────── */
+    #sovereignty .glass-panel {
+      padding: 56px 48px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    #sovereignty h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 32px;
+    }
+    .sovereignty-statements {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .sovereignty-statements p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding-left: 20px;
+      border-left: 2px solid rgba(249, 115, 22, 0.4);
+    }
+
+    /* ─── Video Demo ─────────────────────────────────────────── */
+    #demo .section-inner {
+      text-align: center;
+    }
+    #demo h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 16px;
+    }
+    #demo .demo-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 40px;
+    }
+    .video-wrapper {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 60px rgba(139, 92, 246, 0.2), 0 0 120px rgba(139, 92, 246, 0.08);
+      aspect-ratio: 16 / 9;
+      background: rgba(26, 26, 46, 0.5);
+    }
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .video-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--text-muted);
+    }
+    .video-placeholder svg {
+      width: 64px;
+      height: 64px;
+      opacity: 0.5;
+    }
+    .video-placeholder span {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ─── Pricing ─────────────────────────────────────────────── */
+    #pricing .section-inner {
+      text-align: center;
+    }
+    #pricing h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 16px;
+    }
+    #pricing .pricing-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 48px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .pricing-card {
+      padding: 40px 32px;
+      text-align: left;
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: var(--secondary);
+      box-shadow: 0 0 40px rgba(249, 115, 22, 0.25), 0 0 80px rgba(249, 115, 22, 0.1);
+    }
+    .pricing-card .tier-label {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .pricing-card.featured .tier-label {
+      color: var(--secondary);
+    }
+    .pricing-card .storage-size {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .pricing-card .price {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .pricing-card .price-period {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .pricing-card .price-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+    .pricing-features li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pricing-features li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+    .pricing-card.featured .pricing-features li::before {
+      background: var(--secondary);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -1px;
+      right: 24px;
+      background: var(--secondary);
+      color: white;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 0 0 8px 8px;
+    }
+
+    /* ─── Email Signup ───────────────────────────────────────── */
+    #signup .section-inner {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    #signup h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 16px;
+    }
+    #signup .signup-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+    .signup-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto 16px;
+    }
+    .signup-form input[type="email"] {
+      flex: 1;
+      padding: 14px 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: rgba(26, 26, 46, 0.7);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 300ms;
+    }
+    .signup-form input[type="email"]::placeholder {
+      color: var(--text-muted);
+    }
+    .signup-form input[type="email"]:focus {
+      border-color: var(--primary);
+    }
+    .signup-form button {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 200ms var(--ease-cinematic), box-shadow 200ms var(--ease-cinematic);
+      white-space: nowrap;
+    }
+    .signup-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+    }
+    .signup-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+    .signup-success {
+      display: none;
+      color: var(--primary);
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .signup-form {
+        flex-direction: column;
+      }
+    }
+    .btn {
+      pointer-events: auto;
+      display: inline-block;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 200ms var(--ease-cinematic), box-shadow 200ms var(--ease-cinematic);
+      width: 100%;
+      text-align: center;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
+    }
+    .btn-orange {
+      background: var(--secondary);
+      color: white;
+    }
+    .btn-orange:hover {
+      box-shadow: 0 8px 30px rgba(249, 115, 22, 0.4);
+    }
+
+    /* ─── Download CTA ────────────────────────────────────────── */
+    #download {
+      padding: 160px 24px;
+      text-align: center;
+      pointer-events: none;
+    }
+    #download h2 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      margin-bottom: 16px;
+    }
+    #download p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+    #download .btn {
+      pointer-events: auto;
+      width: auto;
+      padding: 16px 48px;
+      font-size: 1.1rem;
+    }
+
+    /* ─── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+      #problem .glass-panel,
+      #sovereignty .glass-panel {
+        padding: 32px 24px;
+      }
+      .feature-card {
+        padding: 28px 24px;
+      }
+      .section {
+        padding: 80px 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .glass-panel {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: rgba(26, 26, 46, 0.88);
+      }
+    }
+
+    /* ─── Loading ─────────────────────────────────────────────── */
+    .globe-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1s var(--ease-cinematic);
+    }
+    .globe-loading.loaded {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-text {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div class="globe-loading" id="loading">
+    <div class="loading-text">KASIUS</div>
+  </div>
+
+  <!-- Three.js canvas -->
+  <canvas id="globe-canvas"></canvas>
+
+  <!-- Content -->
+  <div class="content-wrapper">
+
+    <!-- HERO -->
+    <section id="hero">
+      <h1 class="hero-tagline">Your whole world, in one place.</h1>
+      <p class="hero-sub">Sovereign intelligence for those who refuse to be uninformed.</p>
+      <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-chevron"></div>
+      </div>
+    </section>
+
+    <!-- THE PROBLEM -->
+    <section id="problem" class="section">
+      <div class="section-inner">
+        <div class="glass-panel slide-left">
+          <h2>The world doesn't stop. Your feed does.</h2>
+          <p>You open your phone and you see what the algorithm thinks you want. Not what you need. Not what's shifting underneath the surface of global affairs. The information you depend on has been filtered, compressed, and repackaged by systems that optimize for engagement, not understanding.</p>
+          <p>Critical events slip through the cracks — not because they aren't happening, but because nothing in your stack was designed to surface them. You're left with fragments. A headline here, a tweet there. Stitching together the picture yourself, always a step behind. The gap between what's happening in the world and what reaches you grows wider every day, and no one is building for the person who actually wants to know.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <div class="section-inner">
+        <h2 class="fade-up">What KASIUS sees that you don't.</h2>
+        <div class="features-grid">
+
+          <div class="feature-card glass-panel fade-up" data-delay="0">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="20" cy="20" r="8"/>
+                <circle cx="20" cy="20" r="3"/>
+                <line x1="20" y1="4" x2="20" y2="8"/>
+                <line x1="20" y1="32" x2="20" y2="36"/>
+                <line x1="4" y1="20" x2="8" y2="20"/>
+                <line x1="32" y1="20" x2="36" y2="20"/>
+              </svg>
+            </div>
+            <h3>Blind Spot Engine</h3>
+            <p>Detects what your feeds aren't showing you. Maps the gaps between what you're consuming and what's actually unfolding across the world.</p>
+          </div>
+
+          <div class="feature-card glass-panel fade-up" data-delay="100">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 4 L36 14 V26 L20 36 L4 26 V14 Z"/>
+                <path d="M20 14 L28 19 V25 L20 30 L12 25 V19 Z"/>
+                <line x1="20" y1="4" x2="20" y2="14"/>
+                <line x1="36" y1="14" x2="28" y2="19"/>
+                <line x1="4" y1="14" x2="12" y2="19"/>
+              </svg>
+            </div>
+            <h3>Truth Calibration Engine</h3>
+            <p>Cross-references claims across hundreds of sources in real-time. Surfaces contradiction, confirms convergence, and scores the reliability of what you're seeing.</p>
+          </div>
+
+          <div class="feature-card glass-panel fade-up" data-delay="200">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 4 V16"/>
+                <path d="M14 16 H26 V24 L20 30 L14 24 Z"/>
+                <circle cx="20" cy="20" r="2"/>
+                <path d="M10 34 L20 30 L30 34"/>
+              </svg>
+            </div>
+            <h3>Personal Impact Flags</h3>
+            <p>Alerts you when world events directly affect your life — your supply chain, your region, your portfolio, your field. Intelligence that's personal, not generic.</p>
+          </div>
+
+          <div class="feature-card glass-panel fade-up" data-delay="300">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 32 L14 22 L22 28 L36 8"/>
+                <path d="M28 8 H36 V16"/>
+                <path d="M4 32 L14 26 L22 32 L36 18" stroke-dasharray="3 3" opacity="0.4"/>
+              </svg>
+            </div>
+            <h3>Scenario Planning Mode</h3>
+            <p>Model what-if futures based on live intelligence streams. Explore how current events could cascade and prepare for outcomes before they arrive.</p>
+          </div>
+
+          <div class="feature-card glass-panel fade-up" data-delay="400">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="28" cy="12" r="4"/>
+                <circle cx="20" cy="28" r="4"/>
+                <line x1="15" y1="14" x2="25" y2="14"/>
+                <line x1="14" y1="15" x2="18" y2="25"/>
+                <line x1="26" y1="15" x2="22" y2="25"/>
+              </svg>
+            </div>
+            <h3>Convergence Alerts</h3>
+            <p>Detects when separate events across different domains are actually connected. Surfaces hidden links between geopolitics, markets, technology, and conflict.</p>
+          </div>
+
+          <div class="feature-card glass-panel fade-up" data-delay="500">
+            <div class="icon">
+              <svg viewBox="0 0 40 40" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="6" y="24" width="28" height="8" rx="2"/>
+                <rect x="10" y="14" width="20" height="8" rx="2"/>
+                <rect x="14" y="4" width="12" height="8" rx="2"/>
+                <line x1="20" y1="12" x2="20" y2="14"/>
+                <line x1="20" y1="22" x2="20" y2="24"/>
+              </svg>
+            </div>
+            <h3>Forward Intelligence Layer</h3>
+            <p>Predicts emerging situations before they trend. Identifies weak signals, accelerating patterns, and tipping points that traditional media misses entirely.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDEO DEMO -->
+    <section id="demo" class="section">
+      <div class="section-inner">
+        <h2 class="fade-up">See KASIUS in action.</h2>
+        <div class="video-wrapper fade-up" data-delay="100">
+          <div class="video-placeholder">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="32" cy="32" r="28"/>
+              <polygon points="26,20 26,44 46,32" fill="currentColor" stroke="none"/>
+            </svg>
+            <span>Demo Coming Soon</span>
+          </div>
+          <video controls style="display:none;">
+            <source src="" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOVEREIGNTY -->
+    <section id="sovereignty" class="section">
+      <div class="section-inner">
+        <div class="glass-panel fade-up">
+          <h2>Your intelligence. Your machine. No one else's.</h2>
+          <div class="sovereignty-statements">
+            <p><span class="accent-orange">No cloud dependency.</span> KASIUS runs locally on your hardware. Your intelligence engine doesn't phone home, doesn't sync to a server, and doesn't rely on someone else's uptime to function.</p>
+            <p><span class="accent-orange">No algorithm deciding what you see.</span> Every filter, every priority, every threshold is yours to set. You decide what matters. The machine obeys — it doesn't curate on your behalf.</p>
+            <p><span class="accent-orange">Your data never leaves your device.</span> No telemetry. No analytics. No silent uploads. What you research, what you track, what you build inside KASIUS stays exactly where it belongs — with you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section">
+      <div class="section-inner">
+        <h2 class="fade-up">Choose your size.</h2>
+        <p class="pricing-subtitle fade-up">One device. No subscriptions. No cloud. Everything you need, loaded and ready.</p>
+        <div class="pricing-grid">
+          <div class="pricing-card glass-panel fade-up" data-delay="0">
+            <div class="tier-label">Essential</div>
+            <div class="storage-size">256GB</div>
+            <div class="price">$199</div>
+            <p class="price-desc">Everything included. Compact storage for focused intelligence.</p>
+            <ul class="pricing-features">
+              <li>Real-time global event monitoring</li>
+              <li>Blind Spot Engine</li>
+              <li>Truth Calibration Engine</li>
+              <li>Personal Impact Flags</li>
+              <li>Convergence Alerts</li>
+              <li>Scenario Planning Mode</li>
+              <li>Forward Intelligence Layer</li>
+              <li>Local-first architecture</li>
+            </ul>
+            <a href="#" class="btn btn-secondary">Pre-Order</a>
+          </div>
+          <div class="pricing-card glass-panel fade-up" data-delay="100">
+            <div class="tier-label">Standard</div>
+            <div class="storage-size">512GB</div>
+            <div class="price">$299</div>
+            <p class="price-desc">Everything included. More room for deeper intelligence archives.</p>
+            <ul class="pricing-features">
+              <li>Real-time global event monitoring</li>
+              <li>Blind Spot Engine</li>
+              <li>Truth Calibration Engine</li>
+              <li>Personal Impact Flags</li>
+              <li>Convergence Alerts</li>
+              <li>Scenario Planning Mode</li>
+              <li>Forward Intelligence Layer</li>
+              <li>Local-first architecture</li>
+            </ul>
+            <a href="#" class="btn btn-primary">Pre-Order</a>
+          </div>
+          <div class="pricing-card glass-panel featured fade-up" data-delay="200">
+            <div class="popular-badge">Most Popular</div>
+            <div class="tier-label">Maximum</div>
+            <div class="storage-size">1TB</div>
+            <div class="price">$399</div>
+            <p class="price-desc">Everything included. Maximum capacity for total sovereign intelligence.</p>
+            <ul class="pricing-features">
+              <li>Real-time global event monitoring</li>
+              <li>Blind Spot Engine</li>
+              <li>Truth Calibration Engine</li>
+              <li>Personal Impact Flags</li>
+              <li>Convergence Alerts</li>
+              <li>Scenario Planning Mode</li>
+              <li>Forward Intelligence Layer</li>
+              <li>Local-first architecture</li>
+            </ul>
+            <a href="#" class="btn btn-orange">Pre-Order</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMAIL SIGNUP -->
+    <section id="signup" class="section">
+      <div class="section-inner fade-up">
+        <h2>Stay in the loop.</h2>
+        <p class="signup-subtitle">Register your email to get launch updates, early access, and free software updates for your first year. All updates are delivered via email — this is how you'll receive new features and improvements.</p>
+        <form class="signup-form" id="signupForm">
+          <input type="email" placeholder="you@example.com" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <p class="signup-note">No spam. Unsubscribe anytime.</p>
+        <p class="signup-success" id="signupSuccess">You're in. Watch your inbox.</p>
+      </div>
+    </section>
+
+    <!-- PRE-ORDER CTA -->
+    <section id="download" class="section">
+      <div class="section-inner fade-up">
+        <h2>Own it.</h2>
+        <p>Ships with everything you need. Plug in and own your intelligence.</p>
+        <a href="#" class="btn btn-orange">Pre-Order Now</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Three.js -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ─── Globe Utils (ported from kasius app) ─────────────────────
+    const DEG2RAD = Math.PI / 180;
+
+    function latLngToVector3(lat, lng, radius) {
+      const phi = (90 - lat) * DEG2RAD;
+      const theta = (lng + 180) * DEG2RAD;
+      return new THREE.Vector3(
+        -radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.cos(phi),
+        radius * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+
+    function getSunDirection() {
+      const now = new Date();
+      const hours = now.getUTCHours() + now.getUTCMinutes() / 60;
+      const hourAngle = (hours - 12) * 15 * DEG2RAD;
+      const dayOfYear = Math.floor(
+        (now.getTime() - new Date(now.getUTCFullYear(), 0, 0).getTime()) / 86400000
+      );
+      const declination = -23.44 * Math.cos((360 / 365) * (dayOfYear + 10) * DEG2RAD) * DEG2RAD;
+      const direction = new THREE.Vector3(
+        -Math.cos(declination) * Math.cos(hourAngle),
+        Math.sin(declination),
+        Math.cos(declination) * Math.sin(hourAngle)
+      );
+      return direction.normalize();
+    }
+
+    const MONTH_TEXTURES = [
+      'earth_january.jpg', 'earth_february.jpg', 'earth_march.jpg',
+      'earth_april.jpg', 'earth_may.jpg', 'earth_june.jpg',
+      'earth_july.jpg', 'earth_august.jpg', 'earth_septemeber.jpg',
+      'earth_october.jpg', 'earth_november.jpg', 'earth_december.jpg'
+    ];
+
+    function getCurrentMonthTexture() {
+      return MONTH_TEXTURES[new Date().getMonth()];
+    }
+
+    // ─── Earth Shader (ported from kasius app) ────────────────────
+    const earthVertexShader = `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDirection;
+      void main() {
+        vUv = uv;
+        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+        vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+        vViewDirection = normalize(cameraPosition - worldPosition.xyz);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+
+    const earthFragmentShader = `
+      uniform sampler2D dayMap;
+      uniform sampler2D nightMap;
+      uniform vec3 sunDirection;
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDirection;
+      void main() {
+        float dayFactor = smoothstep(-0.1, 0.2, dot(vNormal, sunDirection));
+        float diffuse = 0.4 + 0.6 * max(0.0, dot(vNormal, sunDirection));
+        vec3 dayColor = texture2D(dayMap, vUv).rgb * diffuse;
+        vec3 nightColor = texture2D(nightMap, vUv).rgb * vec3(1.2, 1.1, 0.8);
+        nightColor *= (1.0 - dayFactor);
+        vec3 color = mix(nightColor, dayColor, dayFactor);
+        float fresnel = pow(1.0 - abs(dot(normalize(vViewDirection), vNormal)), 3.0);
+        color += fresnel * vec3(0.3, 0.6, 1.0) * 0.15;
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+
+    // ─── Atmosphere Shader ────────────────────────────────────────
+    const atmosphereVertexShader = `
+      varying vec3 vNormal;
+      varying vec3 vPosition;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+
+    const atmosphereFragmentShader = `
+      varying vec3 vNormal;
+      varying vec3 vPosition;
+      void main() {
+        float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+        vec3 color = vec3(0.35, 0.45, 1.0) * 0.6 + vec3(0.55, 0.36, 0.96) * 0.4;
+        gl_FragColor = vec4(color, 1.0) * intensity * 1.2;
+      }
+    `;
+
+    // ─── Marker Texture (ported from kasius app) ──────────────────
+    function createMarkerTexture(hexColor) {
+      const size = 64;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const r = (hexColor >> 16) & 0xff;
+      const g = (hexColor >> 8) & 0xff;
+      const b = hexColor & 0xff;
+      const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+      gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 1.0)`);
+      gradient.addColorStop(0.3, `rgba(${r}, ${g}, ${b}, 0.8)`);
+      gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, 0.3)`);
+      gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.0)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    // ─── Scene Setup ──────────────────────────────────────────────
+    const canvas = document.getElementById('globe-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x0a0a0f);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0.3, 2.8);
+
+    // ─── Controls ─────────────────────────────────────────────────
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.rotateSpeed = 0.5;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.4;
+
+    // ─── Starfield ────────────────────────────────────────────────
+    const starCount = 2500;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      const r = 20 + Math.random() * 40;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      starPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      starPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      starPositions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, sizeAttenuation: true });
+    scene.add(new THREE.Points(starGeometry, starMaterial));
+
+    // ─── Earth ────────────────────────────────────────────────────
+    const textureLoader = new THREE.TextureLoader();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const segments = isMobile ? 48 : 64;
+
+    const dayTexturePath = `textures/${getCurrentMonthTexture()}`;
+    const nightTexturePath = 'textures/earth_night.jpg';
+
+    let earthMaterial;
+    let texturesLoaded = 0;
+
+    function checkLoaded() {
+      texturesLoaded++;
+      if (texturesLoaded >= 2) {
+        document.getElementById('loading').classList.add('loaded');
+      }
+    }
+
+    const dayMap = textureLoader.load(dayTexturePath, checkLoaded);
+    const nightMap = textureLoader.load(nightTexturePath, checkLoaded);
+    dayMap.colorSpace = THREE.SRGBColorSpace;
+    nightMap.colorSpace = THREE.SRGBColorSpace;
+
+    const sunDir = getSunDirection();
+    earthMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        dayMap: { value: dayMap },
+        nightMap: { value: nightMap },
+        sunDirection: { value: sunDir }
+      },
+      vertexShader: earthVertexShader,
+      fragmentShader: earthFragmentShader
+    });
+
+    const earth = new THREE.Mesh(
+      new THREE.SphereGeometry(1, segments, segments),
+      earthMaterial
+    );
+    scene.add(earth);
+
+    // ─── Atmosphere ───────────────────────────────────────────────
+    const atmosphere = new THREE.Mesh(
+      new THREE.SphereGeometry(1.14, segments, segments),
+      new THREE.ShaderMaterial({
+        vertexShader: atmosphereVertexShader,
+        fragmentShader: atmosphereFragmentShader,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        transparent: true
+      })
+    );
+    scene.add(atmosphere);
+
+    // ─── Event Markers ────────────────────────────────────────────
+    const markerGroup = new THREE.Group();
+    scene.add(markerGroup);
+
+    const PURPLE = 0x8B5CF6;
+    const ORANGE = 0xF97316;
+    const purpleTexture = createMarkerTexture(PURPLE);
+    const orangeTexture = createMarkerTexture(ORANGE);
+
+    const markerLocations = [
+      { lat: 40.71, lng: -74.01, color: PURPLE },   // New York
+      { lat: 51.51, lng: -0.13, color: ORANGE },     // London
+      { lat: 35.68, lng: 139.69, color: PURPLE },    // Tokyo
+      { lat: 48.86, lng: 2.35, color: ORANGE },      // Paris
+      { lat: -33.87, lng: 151.21, color: PURPLE },   // Sydney
+      { lat: 55.76, lng: 37.62, color: ORANGE },     // Moscow
+      { lat: 39.91, lng: 116.40, color: PURPLE },    // Beijing
+      { lat: 28.61, lng: 77.21, color: ORANGE },     // New Delhi
+      { lat: -23.55, lng: -46.63, color: PURPLE },   // São Paulo
+      { lat: 1.35, lng: 103.82, color: ORANGE },     // Singapore
+      { lat: 25.20, lng: 55.27, color: PURPLE },     // Dubai
+      { lat: 37.57, lng: 126.98, color: ORANGE },    // Seoul
+      { lat: -1.29, lng: 36.82, color: PURPLE },     // Nairobi
+      { lat: 19.43, lng: -99.13, color: ORANGE },    // Mexico City
+      { lat: 34.05, lng: -118.24, color: PURPLE },   // Los Angeles
+      { lat: 52.52, lng: 13.41, color: ORANGE },     // Berlin
+      { lat: -34.60, lng: -58.38, color: PURPLE },   // Buenos Aires
+      { lat: 30.04, lng: 31.24, color: ORANGE },     // Cairo
+      { lat: 59.33, lng: 18.07, color: PURPLE },     // Stockholm
+      { lat: 35.69, lng: 51.39, color: ORANGE },     // Tehran
+    ];
+
+    const markers = [];
+    markerLocations.forEach(loc => {
+      const tex = loc.color === PURPLE ? purpleTexture : orangeTexture;
+      const material = new THREE.SpriteMaterial({
+        map: tex,
+        blending: THREE.AdditiveBlending,
+        depthTest: true,
+        depthWrite: false,
+        transparent: true
+      });
+      const sprite = new THREE.Sprite(material);
+      const pos = latLngToVector3(loc.lat, loc.lng, 1.015);
+      sprite.position.copy(pos);
+      const baseScale = 0.035;
+      sprite.scale.set(baseScale, baseScale, 1);
+      markerGroup.add(sprite);
+      markers.push({ sprite, material, baseScale, phase: Math.random() * Math.PI * 2 });
+    });
+
+    // ─── Ambient Light ────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0xffffff, 0.05));
+
+    // ─── Animation Loop ───────────────────────────────────────────
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      // Update sun direction every ~60 seconds
+      if (Math.floor(elapsed) % 60 === 0) {
+        earthMaterial.uniforms.sunDirection.value.copy(getSunDirection());
+      }
+
+      // Pulse markers
+      markers.forEach(m => {
+        const t = Math.sin(elapsed * 1.2 + m.phase);
+        m.material.opacity = 0.5 + t * 0.5;
+        const s = m.baseScale * (1 + t * 0.15);
+        m.sprite.scale.set(s, s, 1);
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // ─── Resize ───────────────────────────────────────────────────
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ─── Intersection Observer ────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.dataset.delay;
+          if (delay) {
+            entry.target.style.transitionDelay = delay + 'ms';
+          }
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-up, .slide-left').forEach(el => {
+      observer.observe(el);
+    });
+
+    // ─── Email Signup ───────────────────────────────────────────
+    const signupForm = document.getElementById('signupForm');
+    const signupSuccess = document.getElementById('signupSuccess');
+    if (signupForm) {
+      signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        signupForm.style.display = 'none';
+        document.querySelector('.signup-note').style.display = 'none';
+        signupSuccess.style.display = 'block';
+      });
+    }
+  </script>
+
+
+</body>
+</html>
