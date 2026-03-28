@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Use Cases — KASIUS</title>
+  <meta name="description" content="See what KASIUS can do. Video showcases and real-world use cases.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+
+  <style>
+    /* ─── Tokens ──────────────────────────────────────────────── */
+    :root {
+      --bg: #0a0a0f;
+      --primary: #8B5CF6;
+      --secondary: #F97316;
+      --card: #1a1a2e;
+      --text: #ffffff;
+      --text-muted: #9ca3af;
+      --font-heading: 'Chakra Petch', sans-serif;
+      --font-body: 'IBM Plex Sans', sans-serif;
+      --ease-cinematic: cubic-bezier(0.23, 1, 0.32, 1);
+      --glass-bg: rgba(26, 26, 46, 0.7);
+      --glass-border: rgba(139, 92, 246, 0.3);
+      --glass-blur: blur(12px);
+    }
+
+    /* ─── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Starfield Background ───────────────────────────────── */
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 25% 50%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 40% 15%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 5% 45%, rgba(139,92,246,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 60% 25%, rgba(249,115,22,0.4), transparent),
+        radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 95% 55%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 20% 65%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 45% 5%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 65% 95%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 80% 45%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 35% 75%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 12% 30%, rgba(255,255,255,0.5), transparent);
+    }
+
+    /* ─── Content Layer ──────────────────────────────────────── */
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 15, 0.6);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 3px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 300ms;
+      letter-spacing: 0.5px;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text);
+    }
+
+    @media (max-width: 480px) {
+      .nav { padding: 14px 16px; }
+      .nav-links { gap: 20px; }
+      .nav-links a { font-size: 0.8rem; }
+    }
+
+    /* ─── Glass Panel ────────────────────────────────────────── */
+    .glass-panel {
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: var(--glass-blur);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─── Typography ─────────────────────────────────────────── */
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+    .accent-orange { color: var(--secondary); }
+    .accent-purple { color: var(--primary); }
+
+    /* ─── Animations ─────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 800ms var(--ease-cinematic), transform 800ms var(--ease-cinematic);
+    }
+    .fade-up.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Use Cases Page ─────────────────────────────────────── */
+    .uc-hero {
+      padding: 160px 24px 80px;
+      text-align: center;
+    }
+    .uc-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 16px;
+    }
+    .uc-hero .subtitle {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+      font-weight: 300;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .uc-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .uc-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .uc-card-video {
+      aspect-ratio: 16 / 9;
+      background: rgba(10, 10, 15, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .uc-card-video svg {
+      width: 48px;
+      height: 48px;
+      color: var(--text-muted);
+      opacity: 0.4;
+    }
+
+    .uc-card-body {
+      padding: 24px;
+    }
+
+    .uc-card-body h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .uc-card-body p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .uc-card-body .coming-soon {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--secondary);
+      opacity: 0.8;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .uc-grid {
+        grid-template-columns: 1fr;
+      }
+      .glass-panel {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: rgba(26, 26, 46, 0.88);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Starfield -->
+  <div class="starfield"></div>
+
+  <!-- Content -->
+  <div class="content-wrapper">
+
+    <!-- Nav -->
+    <nav class="nav">
+      <a href="index.html" class="nav-logo">KASIUS</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="use-cases.html" class="active">Use Cases</a></li>
+      </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="uc-hero">
+      <h1 class="fade-up">See what <span class="accent-orange">KASIUS</span> can do.</h1>
+      <p class="subtitle fade-up" data-delay="100">Video showcases and real-world use cases coming soon.</p>
+    </section>
+
+    <!-- Cards Grid -->
+    <div class="uc-grid">
+
+      <div class="uc-card glass-panel fade-up" data-delay="100">
+        <div class="uc-card-video">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="24" r="20"/>
+            <polygon points="20,16 20,32 34,24" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="uc-card-body">
+          <h3>Real-Time Threat Detection</h3>
+          <p>Watch KASIUS surface emerging global events before they hit mainstream news.</p>
+          <span class="coming-soon">Video coming soon</span>
+        </div>
+      </div>
+
+      <div class="uc-card glass-panel fade-up" data-delay="200">
+        <div class="uc-card-video">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="24" r="20"/>
+            <polygon points="20,16 20,32 34,24" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="uc-card-body">
+          <h3>Blind Spot Analysis</h3>
+          <p>See how KASIUS identifies the stories your feeds are hiding from you.</p>
+          <span class="coming-soon">Video coming soon</span>
+        </div>
+      </div>
+
+      <div class="uc-card glass-panel fade-up" data-delay="300">
+        <div class="uc-card-video">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="24" r="20"/>
+            <polygon points="20,16 20,32 34,24" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="uc-card-body">
+          <h3>Truth Calibration in Action</h3>
+          <p>Cross-referencing claims across hundreds of sources in real-time, scored for reliability.</p>
+          <span class="coming-soon">Video coming soon</span>
+        </div>
+      </div>
+
+      <div class="uc-card glass-panel fade-up" data-delay="400">
+        <div class="uc-card-video">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="24" cy="24" r="20"/>
+            <polygon points="20,16 20,32 34,24" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div class="uc-card-body">
+          <h3>Personal Impact Mapping</h3>
+          <p>How KASIUS connects global events directly to what matters in your life.</p>
+          <span class="coming-soon">Video coming soon</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // ─── Intersection Observer ────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.dataset.delay;
+          if (delay) {
+            entry.target.style.transitionDelay = delay + 'ms';
+          }
+          entry.target.classList.add('in-view');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-up').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>
