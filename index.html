@@ -1276,7 +1276,7 @@
     });
 
     // ─── Email Signup ───────────────────────────────────────────
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxi-FbJMPHgtS8lnCp-Ii7BRpNxI30RrFkVcKbTkfoHq-uSxU49kUg1vKur5HVL2wbsew/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG78mZ29VOz1AMoyL8V7FhHjXDHkaDap3G93iLxP0_EIEyrLh4YhMZDOFf4LDTW367zQ/exec';
     const signupForm = document.getElementById('signupForm');
     const signupSuccess = document.getElementById('signupSuccess');
     if (signupForm) {
@@ -1295,11 +1295,9 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
-        fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
+        fetch(APPS_SCRIPT_URL + '?email=' + encodeURIComponent(email), {
+          method: 'GET',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: 'email=' + encodeURIComponent(email),
         })
         .then(() => {
           signupForm.style.display = 'none';
