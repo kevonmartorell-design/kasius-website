@@ -1293,26 +1293,26 @@
 
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify({ email: email }),
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'email=' + encodeURIComponent(email),
         })
-        .then(res => res.json())
-        .then(data => {
-          if (data.result === 'success') {
-            signupForm.style.display = 'none';
-            document.querySelector('.signup-note').style.display = 'none';
-            signupSuccess.style.display = 'block';
-          } else {
-            throw new Error(data.message || 'Unknown error');
-          }
+        .then(() => {
+          signupForm.style.display = 'none';
+          document.querySelector('.signup-note').style.display = 'none';
+          signupSuccess.style.display = 'block';
         })
         .catch(() => {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Subscribe';
-          const errorMsg = document.createElement('p');
-          errorMsg.className = 'signup-error';
-          errorMsg.style.cssText = 'color: #f87171; font-size: 0.85rem; margin-top: 0.5rem;';
-          errorMsg.textContent = 'Something went wrong. Try again.';
-          signupForm.parentNode.insertBefore(errorMsg, signupForm.nextSibling);
+          const existingErr = signupForm.parentNode.querySelector('.signup-error');
+          if (!existingErr) {
+            const errorMsg = document.createElement('p');
+            errorMsg.className = 'signup-error';
+            errorMsg.style.cssText = 'color: #f87171; font-size: 0.85rem; margin-top: 0.5rem;';
+            errorMsg.textContent = 'Something went wrong. Try again.';
+            signupForm.parentNode.insertBefore(errorMsg, signupForm.nextSibling);
+          }
         });
       });
     }
