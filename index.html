@@ -1272,14 +1272,48 @@
     });
 
     // ─── Email Signup ───────────────────────────────────────────
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxi-FbJMPHgtS8lnCp-Ii7BRpNxI30RrFkVcKbTkfoHq-uSxU49kUg1vKur5HVL2wbsew/exec';
     const signupForm = document.getElementById('signupForm');
     const signupSuccess = document.getElementById('signupSuccess');
     if (signupForm) {
       signupForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        signupForm.style.display = 'none';
-        document.querySelector('.signup-note').style.display = 'none';
-        signupSuccess.style.display = 'block';
+        const emailInput = signupForm.querySelector('input[type="email"]');
+        const submitBtn = signupForm.querySelector('button[type="submit"]');
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        // Remove any previous error message
+        const existingError = signupForm.parentNode.querySelector('.signup-error');
+        if (existingError) existingError.remove();
+
+        // Disable button and show sending state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ email: email }),
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.result === 'success') {
+            signupForm.style.display = 'none';
+            document.querySelector('.signup-note').style.display = 'none';
+            signupSuccess.style.display = 'block';
+          } else {
+            throw new Error(data.message || 'Unknown error');
+          }
+        })
+        .catch(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Subscribe';
+          const errorMsg = document.createElement('p');
+          errorMsg.className = 'signup-error';
+          errorMsg.style.cssText = 'color: #f87171; font-size: 0.85rem; margin-top: 0.5rem;';
+          errorMsg.textContent = 'Something went wrong. Try again.';
+          signupForm.parentNode.insertBefore(errorMsg, signupForm.nextSibling);
+        });
       });
     }
   </script>
